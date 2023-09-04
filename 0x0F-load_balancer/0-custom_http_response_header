@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# Duplicate web-01 to web-02
+# These scripts are an upgrade from the web-server scripts...
+
+# Uncomment to see the script run in action
+# set -x
+
+# Define colors for formatting
+blue='\e[1;34m'
+brown='\e[0;33m'
+green='\e[1;32m'
+reset='\033[0m'
+
+# Print a message in blue
+echo -e "${blue}Updating and performing some minor checks...${reset}\n"
+
+function install() {
+    # Check if the command exists
+    command -v "$1" &>/dev/null
+
+    # Shellcheck disable=SC2181
+    if [ $? -ne 0 ]; then
+        echo -e "Installing: ${brown}$1${reset}\n"
+        # Update package information and install the specified package
+        sudo apt-get update -y -qq && \
+            sudo apt-get install -y "$1" -qq
+        echo -e "\n"
+    else
+        echo -e "${green}${1} is already installed.${reset}\n"
+    fi
+}
+
+# Install nginx
+install nginx
+
+echo -e "\n${blue}Setting up some minor configurations...${reset}\n"
+
+# Allow Nginx through the firewall
+sudo ufw allow 'Nginx HTTP'
+
+# Give the user ownership of website files for easy editing
+if [ -d "/var/www" ]; then
+    sudo chown -R "$USER":"$USER" /var/www
+    sudo chmod -R 755 /var/www
+else
+    sudo mkdir -p /var/www
+    sudo chown -R "$USER":"$USER" /var/www
+    sudo chmod -R 755 /var/www
+fi
+
+# Create directories if they don't exist
+for dir in /var/www/{html,error}; do
+    if ! [ -d "$dir" ]; then
+        mkdir -p "$dir"
+    fi
+done
+
+# Create a new index page
+echo "Hello World!" > /var/www/html/index.html
+
+# Create a new error page
+echo "Ceci n'est pas une page" > /var/www/html/error_404.html
+
+# Backup the default server config file
+sudo cp /etc/nginx/sites-enabled/default nginx-sites-enabled_default.backup
+
+# Define the server configuration
+server_config="
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    server_name _;
+    add_header X-Served-By \$hostname;
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+    if (\$request_filename ~ redirect_me){
+        rewrite ^ https://th3-gr00t.tk/ permanent;
+    }
+    error_page 404 /error_404.html;
+    location = /error_404.html {
+        internal;
+    }
+}"
+
+# Use 'echo' to set the server_config
+# Shellcheck disable=SC2154
+echo "$server_config" | sudo dd status=none of=/etc/nginx/sites-enabled/default
+
+# Check if Nginx is running and start or restart it accordingly
+if [ "$(pgrep -c nginx)" -le 0 ]; then
+    sudo service nginx start
+else
+    sudo service nginx restart
+fi
+
