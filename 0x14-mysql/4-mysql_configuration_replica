@@ -1,0 +1,8 @@
+#
+# The MySQL  Server configuration file.
+#
+
+[mysqld]
+
+# Distinguish servers in a replication setup
+server-id       = 2
