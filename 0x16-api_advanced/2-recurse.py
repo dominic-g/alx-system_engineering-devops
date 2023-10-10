@@ -11,14 +11,14 @@ import requests
 
 def recurse(subreddit, hot_list=[], af=''):
     """reurcse function to get response from Reddit API"""
-    link = 'https://www.reddit.com/r/{}/hot.json?after={}'.format(subreddit, af)
+    lk = 'https://www.reddit.com/r/{}/hot.json?after={}'.format(subreddit, af)
     headers = {
         'User-agent':
         'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:105.0) \
         Gecko/20100101 Firefox/105.0'
     }
 
-    res = requests.get(url, headers=headers, allow_redirects=False)
+    res = requests.get(lk, headers=headers, allow_redirects=False)
 
     if res.status_code == 404:
         return None

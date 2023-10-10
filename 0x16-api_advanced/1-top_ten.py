@@ -14,7 +14,7 @@ def top_ten(subreddit):
         Gecko/20100101 Firefox/105.0'
     }
 
-    res = requests.get(url, headers=headers, allow_redirects=False)
+    res = requests.get(link, headers=headers, allow_redirects=False)
     data = res.json()
     if res.status_code == 200:
         for sub in data['data']['children']:
