@@ -2,7 +2,7 @@
 """
 Module for counting the occurrences of specified
 words in the titles of hottest articles of a
-given subreddit using the Reddit API. 
+given subreddit using the Reddit API.
 """
 from requests import get
 
