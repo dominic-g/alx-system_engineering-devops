@@ -5,7 +5,7 @@
 - **Impact:** Affecting 75% of users, the outage led to a complete unavailability of the web application services, resulting in loss of user access and revenue.
 - **Root Cause:** The root cause was identified as a critical database failure due to a misconfigured database replication process.
 
-![alt text](https://github.com/dominic-g/alx-system_engineering-devops/0x19-postmortem/pQ9YzVY.gif)
+![alt text](https://github.com/dominic-g/alx-system_engineering-devops/0x19-postmortem/topgear.png)
 
 **Timeline:**
 - **Detection (10:30 AM UTC):** An automated monitoring alert triggered due to a sudden spike in database read/write errors.
